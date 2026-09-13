@@ -765,37 +765,33 @@
     var filtrosSeleccionados = {};
     var sortableInstance = null;
 
-    // Cargar las contraseñas guardadas al iniciar la app
-    function cargarContrasenasGuardadas() {
-        var accLocal = localStorage.getItem("contrasenaAcceso");
-        var genLocal = localStorage.getItem("contrasenaGeneral");
-        var segLocal = localStorage.getItem("contrasenaSeguridad");
-
-        if (accLocal) contrasenaAcceso = accLocal;
-        if (genLocal) contrasenaGeneral = genLocal;
-        if (segLocal) contrasenaBackup = segLocal;
-
-        if (typeof db !== "undefined") {
-            db.ref("configuracion").once("value").then(function(snapshot) {
-                var config = snapshot.val();
-                if (config) {
-                    if (config.contrasenaAcceso) {
-                        contrasenaAcceso = config.contrasenaAcceso;
-                        localStorage.setItem("contrasenaAcceso", config.contrasenaAcceso);
-                    }
-                    if (config.contrasenaGeneral) {
-                        contrasenaGeneral = config.contrasenaGeneral;
-                        localStorage.setItem("contrasenaGeneral", config.contrasenaGeneral);
-                    }
-                    if (config.contrasenaSeguridad) {
-                        contrasenaBackup = config.contrasenaSeguridad;
-                        localStorage.setItem("contrasenaSeguridad", config.contrasenaSeguridad);
-                    }
-                }
-            });
-        }
+function cambiarContrasenaAcceso() {
+    var usuarioActivo = obtenerUsuarioActual();
+    if (!usuarioActivo) {
+        alert("No se pudo identificar al usuario actual.");
+        return;
     }
 
+    var nueva = prompt("Introduce la nueva contraseña para la cuenta del usuario (" + usuarioActivo + "):");
+    if (nueva && nueva.trim() !== "") {
+        var valor = nueva.trim();
+        contrasenaAcceso = valor;
+        
+        // Guardar localmente
+        localStorage.setItem("contrasenaAcceso", valor);
+
+        if (typeof db !== "undefined") {
+            // Guardar en la rama del usuario en Firebase para validación de login
+            db.ref("usuarios/" + usuarioActivo + "/contrasena").set(valor)
+                .then(function() {
+                    alert("Contraseña de acceso para '" + usuarioActivo + "' actualizada con éxito.");
+                })
+                .catch(function(error) {
+                    alert("Error al guardar en la nube: " + error.message);
+                });
+        }
+    }
+}
     function cambiarContrasenaAcceso() {
         var nueva = prompt("Introduce la nueva contraseña para Acceso:");
         if (nueva && nueva.trim() !== "") {
