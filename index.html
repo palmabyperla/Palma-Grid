@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Palma Grid - Acceso</title>
+    <title>Palma Grid (Quijote) - Acceso</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -215,7 +215,7 @@ function obtenerUsuarios() {
         "quijote": "q0000"
     };
 
-    var usuariosGuardados = localStorage.getItem("usuariosPalmaAccess");
+    var usuariosGuardados = localStorage.getItem("usuariospalmagridquijote");
     if (usuariosGuardados) {
         return Object.assign({}, usuariosDefault, JSON.parse(usuariosGuardados));
     }
@@ -266,9 +266,9 @@ function registrarUsuario(event) {
     }
 
     // Guardar la nueva cuenta en localStorage
-    var creadosPrevios = JSON.parse(localStorage.getItem("usuariosPalmaAccess") || "{}");
+    var creadosPrevios = JSON.parse(localStorage.getItem("usuariospalmagridquijote") || "{}");
     creadosPrevios[usuarioInput] = passwordInput;
-    localStorage.setItem("usuariosPalmaAccess", JSON.stringify(creadosPrevios));
+    localStorage.setItem("usuariospalmagridquijote", JSON.stringify(creadosPrevios));
 
     alert("¡Cuenta creada con éxito! Ahora puedes iniciar sesión.");
     
