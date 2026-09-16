@@ -1172,6 +1172,8 @@
         reservas.forEach(function(filaData) {
             crearFilaHTML(filaData);
         });
+
+        reaplicarFiltrosActuales();
     }
 
     function construirSelectMetodoPagoDividido(metodoSeleccionado) {
@@ -1447,6 +1449,7 @@
         });
 
         filas.forEach(function(fila) { tbody.appendChild(fila); });
+        reaplicarFiltrosActuales();
     }
 
     function formatearHora12h(hora24) {
@@ -2019,6 +2022,27 @@
         checkboxes.forEach(function(chk) { chk.checked = source.checked; });
     }
 
+    function reaplicarFiltrosActuales() {
+        var tbody = document.getElementById("cuerpoTabla");
+        if (!tbody) return;
+
+        for (var i = 0; i < tbody.rows.length; i++) {
+            var fila = tbody.rows[i];
+            var mostrar = true;
+
+            for (var col = 2; col < 23; col++) {
+                if (filtrosSeleccionados[col] && filtrosSeleccionados[col].length > 0) {
+                    var valCelda = obtenerValorCelda(fila.cells[col], col) || "(Vacías)";
+                    if (!filtrosSeleccionados[col].includes(valCelda)) {
+                        mostrar = false;
+                        break;
+                    }
+                }
+            }
+            fila.style.display = mostrar ? "" : "none";
+        }
+    }
+
     function aplicarFiltrosExcel() {
         var checkboxes = document.querySelectorAll(".chk-item");
         var seleccionados = [];
@@ -2029,23 +2053,7 @@
 
         filtrosSeleccionados[columnaActual] = seleccionados;
 
-        var tbody = document.getElementById("cuerpoTabla");
-
-        for (var i = 0; i < tbody.rows.length; i++) {
-            var fila = tbody.rows[i];
-            var mostrar = true;
-
-            for (var col = 2; col < 23; col++) {
-                if (filtrosSeleccionados[col]) {
-                    var valCelda = obtenerValorCelda(fila.cells[col], col) || "(Vacías)";
-                    if (!filtrosSeleccionados[col].includes(valCelda)) {
-                        mostrar = false;
-                        break;
-                    }
-                }
-            }
-            fila.style.display = mostrar ? "" : "none";
-        }
+        reaplicarFiltrosActuales();
 
         cerrarMenu();
     }
